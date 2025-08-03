@@ -1,0 +1,364 @@
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44043177-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-44043177-1');
+</script>
+
+<TITLE>Matt Stamps | Mathematician</TITLE>
+
+<div style="width: 800px; margin: 0 auto; overflow: hidden;">
+
+<head>
+    <meta charset="utf-8">
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython_stdlib.js">
+</script>
+</head>
+
+  
+<body onload="brython()" leftmargin="25" rightmargin="25" topmargin="25"
+bottommargin="25" text="#000000" bgcolor="#FFFFFF" link="#000060"
+vlink="#202020" alink="#DDDDDD" style="font-family:arial; font-size:12pt; line-height:24px">
+
+
+<style type='text/css'>
+li {
+  margin-bottom: 5px;
+}
+</style>
+
+<script type="text/python">
+
+from math import pi, acos, sin
+from random import randint, uniform
+from browser import document as doc
+import browser.timer
+
+H_BOUND = 800
+V_BOUND = 350
+PAD = 4
+NUM_VERTS = 7
+EPSILON = 1
+SPEED = 0.5
+INTERVAL = 1
+POINT_COLOR = "#006"
+LINE_COLOR = "#fff"
+BACKGROUND = "#eee"
+
+class Vertex:
+
+        def __init__(self, x, y, kind, position=-1):
+                self.x = x
+                self.y = y
+                self.kind = kind
+                self.position = position
+		dx = uniform(-1,1)
+		dy = uniform(-1,1)
+		n = norm([dx,dy])
+                self.dx = dx/n*SPEED
+                self.dy = dy/n*SPEED
+		self.neighbors = []
+
+        def getCoords(self):
+                return [self.x,self.y]
+
+        def setCoords(self,coords):
+                self.x = coords[0]
+                self.y = coords[1]
+
+        def move(self,h_bound,v_bound):
+                self.x += self.dx
+                self.y += self.dy
+                if self.x < 2*PAD or self.x > h_bound-2*PAD:
+                        self.dx *= -1
+                if self.y < 2*PAD or self.y > v_bound-2*PAD:
+                        self.dy *= -1
+
+	def addNeighbor(self,P):
+		self.neighbors.append(P)
+
+	def angleSum(self):
+		angle = 0
+		if len(self.neighbors) == 3:
+			P = self.neighbors[0]
+			Q = self.neighbors[1]
+			R = self.neighbors[2]
+			angle += abs(calculateAngle(P,self,Q))
+			angle += abs(calculateAngle(Q,self,R))
+			angle += abs(calculateAngle(R,self,P))
+		else:
+			angle += 2*pi
+		return angle
+
+class Edge:
+
+        def __init__(self, initial, terminal, kind):
+                self.initial = initial
+                self.terminal = terminal
+                self.kind = kind
+                self.midpoint = Vertex(0,0,'midpoint')
+                self.length = 0
+		self.update()
+
+        def getVertices(self):
+                return [self.initial,self.terminal]
+
+        def setVertices(self,verts):
+                self.initial = verts[0]
+                self.terminal = verts[1]
+
+        def update(self):
+                x = (self.initial.x+self.terminal.x)/2
+                y = (self.initial.y+self.terminal.y)/2
+                self.midpoint.setCoords([x,y])
+		self.length = dist(self.initial.getCoords(),self.terminal.getCoords())
+
+class Triangle:
+
+        def __init__(self, A, B, C):
+                self.A = A
+                self.B = B
+                self.C = C
+                self.AB = Edge(A,B,'triangle')
+                self.AC = Edge(A,C,'triangle')
+                self.BC = Edge(B,C,'triangle')
+                self.angleA = 0
+                self.angleB = 0
+                self.angleC = 0
+                self.circumcenter = Vertex(0,0,'center')
+                self.circumradius = 0
+                self.update()
+
+        def getVertices(self):
+                return [self.A, self.B, self.C]
+
+        def getAngles(self):
+                return [self.angleA, self.angleB, self.angleC]
+
+        def getEdges(self):
+                return [self.AB, self.AC, self.BC]
+
+        def circumscribes(self,V):
+                return dist(self.circumcenter.getCoords(),V.getCoords()) < self.circumradius
+
+        def update(self):
+                self.angleA = calculateAngle(self.C,self.A,self.B)
+                self.angleB = calculateAngle(self.A,self.B,self.C)
+                self.angleC = calculateAngle(self.B,self.C,self.A)
+		barycenter = list(map(sin,list(map(lambda x: 2*x, self.getAngles()))))
+                n = sum(barycenter)
+                barycenter = list(map(lambda x: x/n, barycenter))
+                circum_coords =  weighted_sum(barycenter,list(map(lambda V: V.getCoords(), self.getVertices())))
+                self.circumcenter.setCoords(circum_coords)
+                self.circumradius = dist(self.A.getCoords(),self.circumcenter.getCoords())
+
+def calculateAngle(P,Q,R):
+        vec1 = [P.x-Q.x,P.y-Q.y]
+        vec2 = [R.x-Q.x,R.y-Q.y]
+        return vec_angle(vec1,vec2)
+
+def clockwise(P,Q,R):
+	return (R.y-P.y)*(Q.x-P.x) < (Q.y-P.y)*(R.x-P.x)
+
+def intersect(E1,E2):
+	A = E1.initial
+	B = E1.terminal
+	C = E2.initial
+	D = E2.terminal
+	return clockwise(A,C,D) != clockwise(B,C,D) and clockwise(A,B,C) != clockwise(A,B,D) 
+
+def calculateBarycenter(angles):
+        barycenter = list(map(sin,list(map(lambda x: 2*x, angles))))
+        n = sum(barycenter)
+        return list(map(lambda x: x/n, barycenter))
+
+def dot_prod(v,w):
+        return sum(list(map(lambda x,y: x*y, v, w)))
+
+def norm(v):
+        return dot_prod(v,v)**0.5
+
+def vec_diff(v,w):
+        return list(map(lambda x,y: x-y, v, w))
+
+def vec_angle(v,w):
+        return acos(dot_prod(v,w)/(norm(v)*norm(w)))
+
+def dist(p,q):
+        return norm(vec_diff(p,q))
+
+def weighted_sum(w,L):
+        components = list(map(list, zip(*L)))
+        return list(map(lambda comp: dot_prod(w,comp), components))
+
+def calcDelTriangles(vertices):
+        n = len(vertices)
+        dummy1 = Vertex(-H_BOUND,-V_BOUND,'dummy',n)
+        dummy2 = Vertex(3*H_BOUND,-V_BOUND,'dummy',n+1)
+        dummy3 = Vertex(-H_BOUND,3*V_BOUND,'dummy',n+2)
+        points = vertices + [dummy1,dummy2,dummy3]
+        triangles = [Triangle(dummy1,dummy2,dummy3)]
+        placed = [dummy1,dummy2,dummy3]
+        for k in range(n):
+                placed.append(vertices[k])
+                bad_triangles = []
+                for T in triangles:
+                        if T.circumscribes(vertices[k]):
+                                bad_triangles.append(T)
+                adj_matrix = [[0]*(n+3) for _ in range(n+3)]
+                for T in bad_triangles:
+                        adj_matrix[T.A.position][T.B.position] += 1
+                        adj_matrix[T.A.position][T.C.position] += 1
+                        adj_matrix[T.B.position][T.C.position] += 1
+                polygon = []
+                for i in range(len(adj_matrix)):
+                        for j in range(i):
+                                if adj_matrix[i][j]+adj_matrix[j][i] == 1:
+                                        polygon.append([j,i])
+                triangles = [T for T in triangles if T not in bad_triangles]
+                for edge in polygon:
+                        i = edge[0]
+                        j = edge[1]
+                        new_triangle = Triangle(points[i],points[j],points[vertices[k].position])
+                        triangles.append(new_triangle)
+        return triangles, placed
+
+def calcDualEdges(triangles,m):
+        edges = []
+        adj_matrix = [[[] for j in range(m)] for i in range(m)]
+        for T in triangles:
+                adj_matrix[T.A.position][T.B.position].append(T)
+                adj_matrix[T.A.position][T.C.position].append(T)
+                adj_matrix[T.B.position][T.C.position].append(T)
+        for i in range(m):
+                for j in range(i):
+                        if len(adj_matrix[i][j])+len(adj_matrix[j][i]) == 2:
+                                triangle_pair = adj_matrix[i][j]+adj_matrix[j][i]
+				triangle_pair[0].circumcenter.addNeighbor(triangle_pair[1].circumcenter)
+				triangle_pair[1].circumcenter.addNeighbor(triangle_pair[0].circumcenter)
+                                edges.append(Edge(triangle_pair[0].circumcenter,triangle_pair[1].circumcenter,"dual"))
+        return edges
+
+def retriangulate():
+	global triangles, placed, edges
+	triangles, placed = calcDelTriangles(vertices)
+	edges = calcDualEdges(triangles, len(placed))
+
+def clear():
+	ctx.beginPath()
+	ctx.fillStyle = BACKGROUND
+	ctx.arc(H_BOUND/2,V_BOUND/2,max(H_BOUND,V_BOUND),0,2*pi)
+	ctx.fill()
+
+def drawVertices():
+	for V in vertices:
+		ctx.beginPath()
+		ctx.fillStyle = BACKGROUND
+		ctx.arc(V.x,V.y,PAD,0,2*pi)
+		ctx.fill()
+		ctx.beginPath()
+		ctx.lineWidth = 3
+                ctx.strokeStyle = POINT_COLOR
+                ctx.arc(V.x,V.y,PAD,0,2*pi)
+                ctx.stroke()
+
+def drawEdges():
+	for E in edges:
+		ctx.beginPath()
+		ctx.lineWidth = 3
+		ctx.strokeStyle = LINE_COLOR
+		ctx.moveTo(E.initial.x, E.initial.y)
+		ctx.lineTo(E.terminal.x, E.terminal.y)
+		ctx.stroke()
+
+def updateDiagram():
+	clear()
+	
+	for V in vertices:
+		V.move(H_BOUND,V_BOUND)
+
+	for T in triangles:
+		T.update()
+	
+	for T in triangles:
+		if T.circumcenter.angleSum() < 2*pi-EPSILON:
+			#print(2*pi-T.circumcenter.angleSum())
+			retriangulate()
+			break		
+
+	drawVertices()
+	drawEdges()
+	
+	ctx.lineWidth = 5
+	ctx.strokeStyle = "#fff"
+	ctx.moveTo(0,0)
+	ctx.lineTo(H_BOUND,0)
+	ctx.lineTo(H_BOUND,V_BOUND)
+	ctx.lineTo(0,V_BOUND)
+	ctx.lineTo(0,0)
+	ctx.stroke()
+
+browser.timer.set_interval(updateDiagram, INTERVAL)
+
+canvas = doc["voronoi"]
+ctx = canvas.getContext("2d")
+
+ctx.beginPath()
+ctx.lineWidth = 5
+ctx.strokeStyle = "#fff"
+ctx.moveTo(0,0)
+ctx.lineTo(H_BOUND,0)
+ctx.lineTo(H_BOUND,V_BOUND)
+ctx.lineTo(0,V_BOUND)
+ctx.lineTo(0,0)
+ctx.stroke()
+
+vertices = [Vertex(randint(PAD,H_BOUND-PAD),randint(PAD,V_BOUND-PAD),"standard",k) for k in range(NUM_VERTS)]
+triangles, placed = calcDelTriangles(vertices)
+edges = calcDualEdges(triangles,len(placed))
+
+updateDiagram()
+
+</script>
+
+<p>
+<canvas width="800" height="350" id="voronoi">
+Voronoi Applet
+</canvas>  
+  
+ <HR color=#FFFFFF>
+<HR color=#FFFFFF>
+  
+<center><font size="8" color=#000060 style="font-family:arial;
+  letter-spacing: 4px;"><a href="index" style="text-decoration:none;color:#000060">Matt Stamps</a></font></center>
+
+<HR color=#FFFFFF>
+<HR color=#FFFFFF> 
+<HR color=#AAAAAA>
+<table style="width:100%">
+  	<tr>
+    		<th><font size="3">
+			<a href="about" style="text-decoration:none;color:#999999">About Me</a>
+		</font></th>
+    		<th><font size="3">
+			<a href="research" style="text-decoration:none;color:#999999">Research</a>
+		</font></th> 
+    		<th><font size="3">
+			<a href="teaching" style="text-decoration:none;color:#999999">Teaching</a>
+		</font></th>
+    		<th><font size="3">
+			<a href="outreach" style="text-decoration:none;color:#999999">Outreach</a>
+		</font></th> 
+		<th><font size="3">
+			<a href="javascript:location='mailto:\u006d\u0061\u0074\u0074\u0068\u0065\u0077\u0073\u0074\u0061\u006d\u0070\u0073\u0040\u0067\u006d\u0061\u0069\u006c\u002e\u0063\u006f\u006d';void 0" style="text-decoration:none;color:#999999">Contact</a>
+		</font></th>
+  	</tr>
+</table>
+<HR color=#AAAAAA>
+</div>
+
