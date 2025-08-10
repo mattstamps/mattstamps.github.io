@@ -1,96 +1,91 @@
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-44043177-1"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'UA-44043177-1');
-</script>
-
-<TITLE>Matt Stamps</TITLE>
-
-<div style="width: 800px; margin: 0 auto; overflow: hidden;">
-
+<!DOCTYPE html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython.min.js">
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/brython@3.9.0/brython_stdlib.js">
-</script>
+  <meta charset="utf-8">
+  <title>Matt Stamps</title>
+  <meta name="viewport" content="width=800">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-44043177-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'UA-44043177-1');
+  </script>
+  <style>
+    body {
+      max-width: 800px;
+      margin: 40px auto 25px auto;
+      background: #fff;
+      color: #000;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    nav {
+      margin-bottom: 1em;
+      border-bottom: 1px solid #aaa;
+      padding-bottom: 0.5em;
+    }
+    nav a {
+      color: #666;
+      text-decoration: none;
+      margin-right: 2em;
+      font-size: 1.1em;
+    }
+    nav a.active {
+      color: #000060;
+      font-weight: bold;
+    }
+    img.profile {
+      border: 2.5px solid #777;
+      border-radius: 2px;
+      float: right;
+      height: 320px;
+      margin-left: 20px;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #aaa;
+      margin: 1em 0;
+    }
+    li { margin-bottom: 5px; }
+  </style>
 </head>
-
-  
-<body onload="brython()" leftmargin="25" rightmargin="25" topmargin="40"
-bottommargin="25" text="#000000" bgcolor="#FFFFFF" link="#000060"
-vlink="#202020" alink="#DDDDDD" style="font-family:arial; font-size:12pt; line-height:24px">
-
-
-<style type='text/css'>
-li {
-  margin-bottom: 5px;
-}
-</style>
-
-<HR color=#FFFFFF>
-<HR color=#FFFFFF> 
-
-<font size="8" color=#000060 style="font-family:arial;
-  letter-spacing: 4px;"><a href="index" style="text-decoration:none;color:#000060">Matt Stamps</a></font>
-
-<HR color=#FFFFFF>
-<HR color=#FFFFFF> 
-<HR color=#AAAAAA>
-<table style="width:100%">
-  	<tr>
-    		<th><font size="3">
-			<a href="about" style="text-decoration:none;color:#666666">About Me</a>
-		</font></th>
-    		<th><font size="3">
-			<a href="research" style="text-decoration:none;color:#999999">Research</a>
-		</font></th> 
-    		<th><font size="3">
-			<a href="teaching" style="text-decoration:none;color:#999999">Teaching</a>
-		</font></th>
-    		<th><font size="3">
-			<a href="outreach" style="text-decoration:none;color:#999999">Outreach</a>
-		</font></th> 
-		<th><font size="3">
-			<a href="javascript:location='mailto:\u006d\u0061\u0074\u0074\u0068\u0065\u0077\u0073\u0074\u0061\u006d\u0070\u0073\u0040\u0067\u006d\u0061\u0069\u006c\u002e\u0063\u006f\u006d';void 0" style="text-decoration:none;color:#999999">Contact</a>
-		</font></th>
-  	</tr>
-</table>
-<HR color=#AAAAAA>
-<HR color=#FFFFFF>
-<HR color=#FFFFFF>
-
-<img style="border:2.5px solid #777777;border-radius:2px"
-  src="matt-stamps.jpg" height=320 align=RIGHT>
-  
-I am a mathematician and data scientist with 14 years of <br> academic and health sector experience.
-
-<p> I earned my PhD at the <a href="http://math.ucdavis.edu/">University of
-California, Davis</a> <br>under the supervision of <a
-href="https://www.math.ucdavis.edu/people/general-profile?fac_id=babson">Eric
-Babson</a>. </p>
-
-<p> From 2015 to 2020, I was an Assistant Professor of Science <br> in the Mathematical, Computational, and Statistical Sciences <br> major at <a
-href="http://www.yale-nus.edu.sg">Yale-NUS College</a>  in Singapore. </p>
-
-<p> Before joining the faculty at Yale-NUS, I was a research <br> fellow at the <a
-href="https://www.kth.se/math">KTH Royal Institute of
-Technology</a> in <br> Stockholm and a postdoc at <a
-href="http://math.aalto.fi/">Aalto University</a> in Helsinki. </p>
-
-<p> Check out my Research and Teaching pages for more details. </p>
-	
-<!--<p> See my <a
-href="resume_stamps.pdf">Resume</a> or <a
-href="cv_stamps.pdf">Academic CV</a> for more details. </p>-->
-
-<HR color=#FFFFFF>
-<HR color=#AAAAAA>
-<HR color=#FFFFFF>
-
-</div>
-
+<body>
+  <header>
+    <h1 style="letter-spacing: 4px; color: #000060;">
+      <a href="index.html" style="text-decoration:none; color:inherit">Matt Stamps</a>
+    </h1>
+    <nav>
+      <a href="about.html" class="active">About Me</a>
+      <a href="research.html">Research</a>
+      <a href="teaching.html">Teaching</a>
+      <a href="outreach.html">Outreach</a>
+      <a href="mailto:matthewstamps@gmail.com">Contact</a>
+    </nav>
+  </header>
+  <hr>
+  <img src="matt-stamps.jpg" alt="Matt Stamps" class="profile">
+  <main>
+    <p>I am a mathematician and data scientist with 14 years of academic and health sector experience.</p>
+    <p>
+      I earned my PhD at the
+      <a href="http://math.ucdavis.edu/">University of California, Davis</a>
+      under the supervision of
+      <a href="https://www.math.ucdavis.edu/people/general-profile?fac_id=babson">Eric Babson</a>.
+    </p>
+    <p>
+      From 2015 to 2020, I was an Assistant Professor of Science in the Mathematical, Computational, and Statistical Sciences major at
+      <a href="http://www.yale-nus.edu.sg">Yale-NUS College</a> in Singapore.
+    </p>
+    <p>
+      Before joining the faculty at Yale-NUS, I was a research fellow at the
+      <a href="https://www.kth.se/math">KTH Royal Institute of Technology</a> in Stockholm and a postdoc at
+      <a href="http://math.aalto.fi/">Aalto University</a> in Helsinki.
+    </p>
+    <p>Check out my <a href="research.html">Research</a> and <a href="teaching.html">Teaching</a> pages for more details.</p>
+  </main>
+  <hr>
+</body>
+</html>
